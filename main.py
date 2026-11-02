@@ -28,7 +28,7 @@ def home():
 
 @ui.page('/workspace')
 def worksapce():
-       workspacePage(files)
+       workspacePage()
 
 
 ui.run()

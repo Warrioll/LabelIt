@@ -2,6 +2,7 @@ from nicegui import ui
 from utils import basicAppSettings
 from PIL import Image
 import io
+from DatasetImage import DatasetImage
 
 def homePage(files: list):
     basicAppSettings('Home')
@@ -17,7 +18,8 @@ def homePage(files: list):
   
          for file in e.files:
             if file.content_type=='image/jpeg' or file.content_type=='image/png': 
-                   files.append( Image.open(io.BytesIO(await file.read())))
+                   #files.append( Image.open(io.BytesIO(await file.read())))
+                   files.append( DatasetImage(await file.read(), file.name,file.content_type))
          uploadedLen=len(e.files)
          del e.files          
          ui.notify(f'{len(files)} files uploaded!', classes='bg-white text-black')
