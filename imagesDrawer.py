@@ -30,13 +30,13 @@ def imagesDrawer():
                  ui.run_javascript("""
 
                     const croppedImg=  new fabric.Rect({
-                                   id: '"""+str(box.boxId)+"""',
+                                   id: """+str(box.boxId)+""",
                                    left: """+str(box.position[0])+"""*window.canvasScale,
                                    top: """+str(box.position[1])+"""*window.canvasScale,
                                    width: """+str(box.width)+"""*window.canvasScale,
                                    height: """+str(box.height)+"""*window.canvasScale, 
-                                   fill: 'rgba(0, 150, 255, 0.3)',
-                                   stroke: 'blue',
+                                   fill: 'rgba(230, 198, 91, 0.3)',
+                                   stroke: 'amber',
                                    strokeWidth: 2, 
                                    transparentCorners: false,
                                    cornerColor: 'white',

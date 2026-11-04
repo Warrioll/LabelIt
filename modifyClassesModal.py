@@ -1,56 +1,53 @@
 import state
-from nicegui import ui, events
+from nicegui import ui
+
 
 def modifyClassesModal():
-    with ui.dialog() as dialog, ui.card().props('dark').classes('w-[50vw] h-[50vh]'):
-        with ui.row().classes('w-full relative items-center justify-center p-3 '):
-            ui.label('EDIT CLASSES').classes(' text-md font-medium')
-            ui.button(icon='close', on_click=dialog.close).classes('absolute right-0').props('flat color=white')
-        with ui.scroll_area().props('dark').classes('h-full  mt-3'):
-            with ui.list().props('dense separator').classes('w-full justify-between items-center mx-8'):
-                with ui.item().classes('uppercase  text-md text-stone-200'):
-                    ui.label('Id').classes('  w-full')
-                    ui.label('Class name').classes('  w-full')
-                for class_name, class_id in list(state.classesList.items()):
-                    current_name = {'value': class_name}
+    with ui.dialog() as dialog:
+        with ui.card().props('dark').classes('w-[50vw] h-[50vh] max-w-none'):
 
-                    with ui.item().classes('w-full'):
-                        id_input = ui.number(
-                            value=class_id,
-                            precision=0,
-                            placeholder='ID',
-                        ).classes('w-24')
+            with ui.row().classes('w-full relative items-center justify-center p-3'):
+                ui.label('EDIT CLASSES').classes('text-md font-medium')
+                ui.button(icon='close', on_click=dialog.close) \
+                    .classes('absolute right-0').props('flat color=white')
 
-                        name_input = ui.input(
-                            value=class_name,
-                            placeholder='Class name',
-                        ).classes('flex-grow')
+            with ui.scroll_area().classes('w-full flex-grow min-h-0 mt-3 px-4'):
+                with ui.list().props('dense separator').classes('w-full'):
 
-                        def update_id(e, name=current_name):
-                            if e.value is not None:
-                                state.classesList[name['value']] = int(e.value)
+                    # Nagłówek
+                    with ui.item().classes('w-full items-center no-wrap'):
+                        ui.label('ID').classes('w-20 shrink-0')
+                        ui.label('Class name').classes('flex-grow min-w-0')
 
-                        def update_name(e, name=current_name):
-                            new_name = e.value.strip()
-                            old_name = name['value']
+                    # Wiersze
+                    for labelClass in state.classesList.classes:
+                        with ui.item().classes('w-full items-center no-wrap'):
+                            ui.number(
+                                placeholder='ID',
+                                precision=0,
+                                value=labelClass.classId,
+                                format='%.f',
+                                on_change=lambda e, lc=labelClass: lc.setClassId(int(e.value))
+                            ).classes('w-16 mx-3 shrink-0 self-center').props('dark filled dense color=amber')
 
-                            if not new_name or new_name == old_name:
-                                return
+                            ui.input(
+                                value=labelClass.className,
+                                placeholder='Class name',
+                            ).classes('col min-w-0 mx-3 self-center ').props('dark filled dense color=amber')
 
-                            if new_name in state.classesList:
-                                ui.notify('Ta nazwa już istnieje!', type='warning')
-                                return
+                            ui.button(icon='check') \
+                                .props('dense dark flat color=amber') \
+                                .classes('shrink-0 q-ma-none q-pa-none mx-3 self-center')
 
-                            class_id = state.classesList.pop(old_name)
-                            state.classesList[new_name] = class_id
+                            ui.button(icon='delete_outline') \
+                                .props('dense dark flat color=amber') \
+                                .classes('shrink-0 q-ma-none q-pa-none mx-3 self-center')
 
-                            name['value'] = new_name
-
-                        id_input.on_value_change(update_id)
-                        name_input.on_value_change(update_name)
-                
-        with ui.row().classes('w-full items-center justify-center p-3 '):
-            ui.button('Add class',icon='add', on_click=dialog.close).props('flat color=amber dense').classes('items-center normal-case w-full')
+            with ui.row().classes('w-full items-center justify-center p-3'):
+                ui.button(
+                    'Add class',
+                    icon='add',
+                    on_click=dialog.close
+                ).props('flat color=amber dense').classes('normal-case w-full')
 
     ui.button('Edit classes', on_click=dialog.open).props('flat color=amber')
-

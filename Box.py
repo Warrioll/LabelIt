@@ -1,4 +1,5 @@
 from typeguard import typechecked
+from LabelClass import LabelClass
 
 @typechecked
 class Box:
@@ -6,14 +7,15 @@ class Box:
     position:tuple[float, float]
     width:float
     height:float
-    className:str |None
+    labelClass: LabelClass
 
-    def __init__(self, boxId:int, topLeft:tuple[float, float],  width:float,height:float, className:str|None =None):
+    def __init__(self, boxId:int, topLeft:tuple[float, float],  width:float,height:float, labelClass:LabelClass|None =None):
         self.boxId=boxId
         self.position=topLeft
         self.width=width
         self.height=height
-        self.className=className
+        self.labelClass=labelClass
 
-    def changeClassName(self, className:str):
-        self.className=className
+    def changeClassName(self, labelClass: LabelClass):
+        print
+        self.labelClass=labelClass

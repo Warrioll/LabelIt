@@ -61,11 +61,13 @@ def workspacePage():
         createMouseUpEvent()
         createMouseMoveEvent()
         createModifiedBoxEvent()
+        createDeselectedBoxEvent()
 
     def createMouseDownEvent():
         ui.run_javascript("""
         window.myCanvas.on('mouse:down', function(opt) {
-                    if (!opt.target) {
+                    window.isDrawingRect = !opt.target;
+                    if ( window.isDrawingRect) {
                         const pointer = window.myCanvas.getPointer(opt.e);
 
                         window.rectPreview= new fabric.Rect({
@@ -73,8 +75,8 @@ def workspacePage():
                             top:  pointer.y,
                             width: 1,
                             height: 1,
-                            fill: 'rgba(0, 150, 255, 0.2)',
-                            stroke: 'blue',
+                            fill: 'rgba(230, 198, 91, 0.2)',
+                            stroke: 'amber',
                             strokeWidth: 2,
                             selectable: false,
                             evented: false,
@@ -98,7 +100,7 @@ def workspacePage():
     def createMouseUpEvent():
         ui.run_javascript("""
         window.myCanvas.on('mouse:up', function(opt) {
-            if (!opt.target && window.rectPreview) {
+           if (window.isDrawingRect && window.rectPreview) {
                 window.myCanvas.remove(window.rectPreview);
                 const pointer = window.myCanvas.getPointer(opt.e);
                 window.rectPreview=null
@@ -117,8 +119,8 @@ def workspacePage():
                             top: top,
                             width: width,
                             height: height,
-                           fill: 'rgba(0, 150, 255, 0.3)',
-                           stroke: 'blue',
+                           fill: 'rgba(230, 198, 91, 0.3)',
+                           stroke: 'rgba(219, 166, 84, 1)',
                            strokeWidth: 2, 
                            transparentCorners: false,
                            cornerColor: 'white',
@@ -193,6 +195,14 @@ def workspacePage():
             });
         """)
 
+    def createDeselectedBoxEvent():
+        ui.run_javascript("""
+            window.myCanvas.on('selection:cleared', function(opt) {
+                //const deselectedBoxes = opt.deselected || [];
+
+              emitEvent('boxDeselected')
+            });
+        """)
 
 
     def boxModifiedHandelr(e):
@@ -204,10 +214,14 @@ def workspacePage():
             box.width=float(e.args["width"])
             box.height=float(e.args["height"])
         print('modifff!', e.args)
+
+    def boxDeselectedHandler(e):
+        state.selectedLabelBoxId= None
+        state.refreshBoxesList()
  
     def createBox(e):
         #nonlocal boxCounter
-        state.currentImg.appendBox(Box(e.args["boxId"], (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], className=next(iter(state.classesList))))
+        state.currentImg.appendBox(Box(e.args["boxId"], (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], state.classesList.getExampleClass()))
         print('new Box:',(e.args["left"], e.args["top"]), e.args["width"],e.args["height"])
         #boxCounter+=1
 
@@ -226,6 +240,7 @@ def workspacePage():
 
     ui.on('boxCreated',createBox )
     ui.on('boxModified', boxModifiedHandelr)
+    ui.on('boxDeselected', boxDeselectedHandler)
 
     with ui.header().style('background-color: #3874c8').classes('items-center justify-between bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
         ui.button(on_click=lambda: left_drawer.toggle(), icon='s_grid_view').props('flat color=white')
