@@ -18,14 +18,14 @@ class LabelClassesList:
     def getClassByName(self, name:str):
         return  next((obj for obj in self.classes if obj.className == name), None)
 
-    def checkIfClassIdAvailable(self, idToCheck:int) -> bool:
-        for labelClass in self.classes:
-            if labelClass.classId ==idToCheck:
-                return False        
-        return True
+    def checkIfClassIdAvailable(self, idToCheck: int, excludeClass) -> bool:
+        return not any(
+            c.classId == idToCheck and c is not excludeClass
+            for c in self.classes
+        )
 
-    def checkIfClassNameAvailable(self, nameToCheck:str) -> bool:
-        for labelClass in self.classes:
-            if labelClass.classId ==nameToCheck:
-                return False  
-        return True
+    def checkIfClassNameAvailable(self, nameToCheck: str, excludeClass) -> bool:
+        return not any(
+            c.className == nameToCheck and c is not excludeClass
+            for c in self.classes
+        )

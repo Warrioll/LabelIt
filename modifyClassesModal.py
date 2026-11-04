@@ -16,32 +16,71 @@ def modifyClassesModal():
 
                     # Nagłówek
                     with ui.item().classes('w-full items-center no-wrap'):
-                        ui.label('ID').classes('w-20 shrink-0')
-                        ui.label('Class name').classes('flex-grow min-w-0')
+                        ui.label('Id').classes('w-28 shrink-0 ml-4')
+                        ui.label('Class name').classes('flex-grow min-w-0 ml-6')
 
                     # Wiersze
-                    for labelClass in state.classesList.classes:
-                        with ui.item().classes('w-full items-center no-wrap'):
+                    classesData=[ [c.classId, c.className] for c in state.classesList.classes]
+
+                    for i, labelClass in enumerate(state.classesList.classes):
+
+                        with ui.item().classes('w-full items-start no-wrap'):
+                        
+                            def validateId(value, obj=labelClass):
+                                if value is None:
+                                    return 'Invalid Id'
+
+                                if not state.classesList.checkIfClassIdAvailable(int(value), obj):
+                                    return ''#f'This class id is already assigned ({value})!'
+
+                                return None
+
+                            def validateName(value, obj=labelClass):
+                                if not value:
+                                    return 'Invalid name'
+
+                                if not state.classesList.checkIfClassNameAvailable(value, obj):
+                                    return ''#f'This class name is already assigned ({value})!'
+
+                                return None
+
+                            def numberChangeHandler(e, obj=labelClass, index=i):
+                                classId = int(e.value)
+                                classesData[index][0] = classId
+
+                                if validateId(classId, obj) is None:
+                                    obj.classId = classId
+                                    state.refreshBoxesList()
+                                else:
+                                    ui.notify(f'This class id is already assigned ({classId})!',type='negative', icon='error')
+
+                            def nameChangeHandler(e, obj=labelClass, index=i):
+                                className = e.value
+                                classesData[index][1] = className
+
+                                if validateName(className, obj) is None:
+                                    obj.className = className
+                                    state.refreshBoxesList()
+                                else:
+                                    ui.notify(f'This class name is already assigned ({className})!',  type='negative', icon='error')
+
                             ui.number(
-                                placeholder='ID',
+                                value=classesData[i][0],
                                 precision=0,
-                                value=labelClass.classId,
                                 format='%.f',
-                                on_change=lambda e, lc=labelClass: lc.setClassId(int(e.value))
-                            ).classes('w-16 mx-3 shrink-0 self-center').props('dark filled dense color=amber')
+                                validation=validateId,
+                                on_change=numberChangeHandler
+                            ).classes('w-28 mx-3 shrink-0 self-center').props('dark filled dense color=amber')
 
                             ui.input(
-                                value=labelClass.className,
-                                placeholder='Class name',
-                            ).classes('col min-w-0 mx-3 self-center ').props('dark filled dense color=amber')
-
-                            ui.button(icon='check') \
-                                .props('dense dark flat color=amber') \
-                                .classes('shrink-0 q-ma-none q-pa-none mx-3 self-center')
+                                value=classesData[i][1],
+                                validation=validateName,
+                                on_change=nameChangeHandler
+                            ).classes('col min-w-0 mx-3 self-center').props('dark filled dense color=amber')
 
                             ui.button(icon='delete_outline') \
                                 .props('dense dark flat color=amber') \
-                                .classes('shrink-0 q-ma-none q-pa-none mx-3 self-center')
+                                .classes('shrink-0 q-ma-none q-pa-none mx-3 mt-2')
 
             with ui.row().classes('w-full items-center justify-center p-3'):
                 ui.button(
