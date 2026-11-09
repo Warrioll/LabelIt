@@ -4,6 +4,7 @@ from PIL import Image
 from pathlib import Path
 from io import BytesIO
 from Box import Box
+from ImageClass import ImageClass
 
 @typechecked
 class DatasetImage:
@@ -11,6 +12,7 @@ class DatasetImage:
     name: str
     mime:str
     boxes: list[Box]
+    imageClasses: list[ImageClass]
 
     def __init__(self, img:bytes| Path, name:str, mime:str | None=None):
         if isinstance(img, bytes):
@@ -23,6 +25,7 @@ class DatasetImage:
         else:
             self.mime=mime
         self.boxes=[]
+        self.imageClasses=[]
 
     def getUrl(self) -> str:
         return f'data:{self.mime};base64,{base64.b64encode(self.imgBytes).decode()}'
@@ -40,3 +43,28 @@ class DatasetImage:
 
     def appendBox(self,box:Box):
          self.boxes.append(box)
+
+    def appendClass(self, imageClass: ImageClass):
+         self.imageClasses.append(imageClass)
+    def removeClass(self, imageClass: ImageClass):
+         self.imageClasses.remove(imageClass)
+
+    def getBoxesDataForYOLO(self) ->list[str]:
+        w, h = self.getImageSize()
+        lines=[]
+        for box in self.boxes:
+              data=box.getBoxDataForYOLO()
+              lines.append(f'{str(data[0])} {str(data[1]/w)} {str(data[2]/h)} {str(data[3]/w)} {str(data[4]/h)}')
+        return lines
+
+    def getImageRecognitionDataForJSON(self)->dict:
+        annotations=[]
+        for i in range(len(self.imageClasses)):
+              annotations.append(self.imageClasses[i].className)
+        return {
+             "image": self.name,
+             "annotations": annotations
+                }
+    def getImageRecognitionDataForCSV(self)->list[str, str]:
+         classes=[cls.className for cls in self.imageClasses]
+         return [self.name, '"['+','.join(classes)+']"']

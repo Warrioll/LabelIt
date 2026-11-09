@@ -17,5 +17,9 @@ class Box:
         self.labelClass=labelClass
 
     def changeClassName(self, labelClass: LabelClass):
-        print
         self.labelClass=labelClass
+
+    def getBoxDataForYOLO(self) -> tuple[int, float, float, float, float]:
+        centerX=self.position[0]+self.width/2
+        centerY=self.position[1]+self.height/2
+        return self.labelClass.classId, centerX, centerY, self.width, self.height

@@ -5,19 +5,10 @@ from DatasetImage import DatasetImage
 import state
 
 @typechecked
-def labelsDrawer():
-
-    selectedLabel:ui.item | None = None
-    #selectedLabelBoxId:int|None =None
+def objectDetectionDrawer():
 
     markup='bg-amber-500/20'
     def markLabelHander( boxId:int):
-        # nonlocal selectedLabelBoxId
-        # nonlocal selectedLabel
-        # if not (selectedLabel is None):
-        #       selectedLabel.classes(remove=markup)
-        # selectedLabel=sender
-        # selectedLabel.classes(markup)
         state.selectedLabelBoxId=boxId
         state.refreshBoxesList()
 
@@ -65,11 +56,15 @@ def labelsDrawer():
                                    ui.tooltip('Change selection').classes('text-xs bg-stone-900 text-center')
                         
                         with ui.item_section().classes('col min-w-0'):
-                            with ui.select(options=state.classesList.getClassesNames(), value=state.currentImg.boxes[i].labelClass.className,with_input=False,on_change=lambda e: state.currentImg.boxes[i].changeClassName(state.classesList.getClassByName(e.value))).classes('w-full ').props(
-                                'dark dense filled color=amber options-dense'):
+                                with ui.select(
+                                    options=state.classesList.getClassesNames(),
+                                    value=state.currentImg.boxes[i].labelClass.className,
+                                    with_input=False,
+                                    on_change=lambda e, obj=state.currentImg.boxes[i]: obj.changeClassName( state.classesList.getClassByName(e.value)  )
+                                ).classes('w-full min-w-0 truncate').props('dark dense filled color=amber options-dense ').style('max-width: 10.1rem;'):
                                    ui.tooltip('Set class').classes('text-xs bg-stone-900 text-center')
                         
-                        with ui.item_section().classes('shrink-0').props('side'):
+                        with ui.item_section().classes('shrink-0').props('side'): 
                             with ui.button(icon='delete_outline', on_click=lambda boxId=state.currentImg.boxes[i].boxId: deleteLabel(boxId)).props('dense dark flat color=amber').classes('shrink-0 q-ma-none q-pa-none'):
                                    ui.tooltip('Delete label').classes('text-xs bg-stone-900 text-center')
                         if state.currentImg.boxes[i].boxId==state.selectedLabelBoxId:

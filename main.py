@@ -20,11 +20,11 @@ APP_URL='http://127.0.0.1:8080/'
 # ''')
 
 
-files=[]
+
 
 @ui.page('/')
 def home():
-     homePage(files)
+     homePage()
 
 @ui.page('/workspace')
 def worksapce():

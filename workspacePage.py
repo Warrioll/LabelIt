@@ -4,24 +4,27 @@ from PIL import Image
 from DatasetImage import DatasetImage
 from pathlib import Path
 from Box import Box
-from labelsDrawer import  labelsDrawer
+from objectDetectionDrawer import objectDetectionDrawer
 from imagesDrawer import imagesDrawer
 import state
-from modifyClassesModal import modifyClassesModal
+from editClassesModal.editClassesModal import editClassesModal
+from imageRecognitionDrawer import imageRecognitionDrawer
+import utils
+from footer import footer
 
 def workspacePage():
     print('Worksapce')
     basicAppSettings('Worksapce')
-    # if len(files)==0:
-    #     ui.navigate.to('/')
+    if len(state.files)==0:
+        ui.navigate.to('/')
+        return 
 
     ui.add_head_html('<script src="https://cdn.jsdelivr.net/npm/fabric@5/dist/fabric.min.js"></script>')
 
-    maxCanvasWidth=1200.0
-    maxCanvasHeight=860.0
     
 
     def cerateCanvas():
+        imgW, imgH = state.currentImg.getImageSize()
 
         ui.run_javascript("""                        
             const el = document.getElementById('myCanvas');
@@ -36,8 +39,8 @@ def workspacePage():
                     return 'Fabric.js nie jest załadowany';
                     }
 
-            el.width="""+str(state.currentImg.getImageSize()[0])+"""*window.canvasScale
-            el.height="""+str(state.currentImg.getImageSize()[1])+"""*window.canvasScale
+            el.width="""+str(imgW)+"""*window.canvasScale
+            el.height="""+str(imgH)+"""*window.canvasScale
 
             window.myCanvas=  new window.fabric.Canvas(el, {
                 selection: false,     
@@ -45,7 +48,8 @@ def workspacePage():
                 
                 });
             el.dataset.fabricInitialized = 'true';
-            window.setCanvasImg=(imgUrl, scale)=>{
+
+            /* window.setCanvasImg=(imgUrl, scale)=>{
                 fabric.Image.fromURL(imgUrl, function(img) {
                     window.myCanvas.setBackgroundImage(img, window.myCanvas.renderAll.bind(window.myCanvas), {
                         scaleX: scale,
@@ -53,8 +57,30 @@ def workspacePage():
                         });
                     });
                 }
+                */
+
+            window.setCanvasImg = (imgUrl, scale, imgW, imgH) => {
+                // Zmiana rozmiaru canvasa
+                window.myCanvas.setDimensions({
+                    width: imgW * scale,
+                    height: imgH * scale
+                });
+
+                // Załadowanie nowego zdjęcia
+                fabric.Image.fromURL(imgUrl, function(img) {
+                    window.myCanvas.setBackgroundImage(
+                        img,
+                        window.myCanvas.renderAll.bind(window.myCanvas),
+                        {
+                            scaleX: scale,
+                            scaleY: scale
+                        }
+                    );
+                });
+            };
+                
             window.rectPreview=null
-            window.setCanvasImg('"""+state.currentImg.getUrl()+"""',window.canvasScale)
+            window.setCanvasImg('"""+state.currentImg.getUrl()+"""',window.canvasScale, """+str(imgW)+""", """+str(imgH)+""")
          """)
 
         createMouseDownEvent()
@@ -75,8 +101,8 @@ def workspacePage():
                             top:  pointer.y,
                             width: 1,
                             height: 1,
-                            fill: 'rgba(230, 198, 91, 0.2)',
-                            stroke: 'amber',
+                            fill: 'rgba(250, 250, 250, 0.2)',//'rgba(230, 198, 91, 0.2)',
+                            stroke: 'white',
                             strokeWidth: 2,
                             selectable: false,
                             evented: false,
@@ -109,18 +135,18 @@ def workspacePage():
             const top =    Math.min(window.startRect.y, pointer.y)
             const width = Math.abs(window.startRect.x - pointer.x)
             const height = Math.abs(window.startRect.y - pointer.y)
-            const boxId=window.boxCounter
-            window.boxCounter++
+            //const boxId="""+str(state.boxCounter)+"""//window.boxCounter
+            //window.boxCounter++
 
             if (!(Math.floor(width)===0 && Math.floor(height)===0)){  
-                const box=  new fabric.Rect({
-                           id: boxId,
+                /*const box=  new fabric.Rect({
+                           id: """+str(state.boxCounter)+""",
                            left:  left,
                             top: top,
                             width: width,
                             height: height,
-                           fill: 'rgba(230, 198, 91, 0.3)',
-                           stroke: 'rgba(219, 166, 84, 1)',
+                           fill: 'rgba(250, 250, 250, 0.3)',//'rgba(230, 198, 91, 0.3)',
+                           stroke: 'white',//'rgba(219, 166, 84, 1)',
                            strokeWidth: 2, 
                            transparentCorners: false,
                            cornerColor: 'white',
@@ -135,10 +161,11 @@ def workspacePage():
                        }); 
                        window.myCanvas.add(box);
                        window.myCanvas.renderAll();
+                       */
 
                 
                 emitEvent('boxCreated', {
-                        boxId: boxId,
+                        //boxId: """+str(state.boxCounter)+""",
                         left:  left/window.canvasScale,
                         top: top/window.canvasScale,
                         width: width/window.canvasScale,
@@ -153,6 +180,7 @@ def workspacePage():
         
 
         """)
+        #state.boxCounter+=1
 
     def createMouseMoveEvent():
         ui.run_javascript("""
@@ -221,47 +249,126 @@ def workspacePage():
  
     def createBox(e):
         #nonlocal boxCounter
-        state.currentImg.appendBox(Box(e.args["boxId"], (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], state.classesList.getExampleClass()))
+        state.currentImg.appendBox(Box(state.boxCounter, (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], state.classesList.getExampleClass()))
         print('new Box:',(e.args["left"], e.args["top"]), e.args["width"],e.args["height"])
+
+        ui.run_javascript("""
+            const box=  new fabric.Rect({
+                           id: """+str(state.boxCounter)+""",
+                           left:  """+str(e.args["left"])+"""*window.canvasScale,
+                            top: """+str(e.args["top"])+"""*window.canvasScale,
+                            width: """+str(e.args["width"])+"""*window.canvasScale,
+                            height: """+str(e.args["height"])+"""*window.canvasScale,
+                           fill: 'rgba(250, 250, 250, 0.3)',//'rgba(230, 198, 91, 0.3)',
+                           stroke: 'white',//'rgba(219, 166, 84, 1)',
+                           strokeWidth: 2, 
+                           transparentCorners: false,
+                           cornerColor: 'white',
+                           cornerStrokeColor: 'blue',
+                           cornerSize: 10,
+                           lockRotation: true,
+                           hasControls: true,
+                           hasBorders: true
+                       }); 
+                      box.setControlsVisibility({
+                           mtr: false
+                       }); 
+                       window.myCanvas.add(box);
+                       window.myCanvas.renderAll();
+
+        """)
+
+        state.boxCounter+=1#int(e.args["boxId"])+1
         #boxCounter+=1
 
 
     state.currentImg=state.files[0]
-    for img in state.files:
-        img.boxes.clear()
+    # for img in state.files:
+    #     img.boxes.clear()
+    state.refreshFooter=footer.refresh
     imgW, imgH = state.currentImg.getImageSize()
 
     ui.run_javascript("""
-        window.maxCanvasHeight="""+str(maxCanvasHeight)+""" 
-        window.maxCanvasWidth="""+str(maxCanvasWidth)+"""     
+
+    /*
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+        */
+
+        const container = document.getElementById('canvasContainer');
+
+        window.maxCanvasHeight= container.clientHeight- 32;
+        window.maxCanvasWidth= container.clientWidth- 32;   
         window.canvasScale=Math.min(window.maxCanvasHeight/"""+str(imgH)+""", window.maxCanvasWidth/"""+str(imgW)+""")
-        window.boxCounter=0
+        //window.boxCounter=0
     """)
 
     ui.on('boxCreated',createBox )
     ui.on('boxModified', boxModifiedHandelr)
     ui.on('boxDeselected', boxDeselectedHandler)
 
-    with ui.header().style('background-color: #3874c8').classes('items-center justify-between bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
+    with ui.header().classes('items-center justify-between bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
         ui.button(on_click=lambda: left_drawer.toggle(), icon='s_grid_view').props('flat color=white')
-        ui.button('Export').props('flat color=amber')
-        ui.label('LabelIt!')
-        modifyClassesModal()
+        with ui.element('div').classes('flex justify-center flex-grow items-center '):
+            
+        #ui.label('LabelIt!')
+            ui.html("""
+                <strong class="text-lg mb-0 mx-5">
+                                Label<span class="text-yellow-500  mb-0">It</span>!
+                </strong>
+            """)
+            with ui.button('Export').props('flat color=amber no-caps'):
+                with ui.menu().props('dark').classes('shadow-none bg-stone-800 border-1 border-stone-700') as menu:
+                    ui.menu_item('Export object detection files (YOLO format)', on_click=lambda: ui.download(utils.createObjectDecectionZip(state.files), f'LabelIt_Object_Detection_YOLO_{utils.getCurrentDateStringForFileName()}.zip'))
+                    ui.separator()
+                    ui.menu_item('Export image recognition JSON file',  on_click=lambda: ui.download(utils.createImageRecognitionJSONFile(state.files), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.json'))
+                    ui.menu_item('Export image recognition CSV file',on_click=lambda: ui.download(utils.createImageRecognitionCSVFile(state.files), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.csv'))
+            editClassesModal()
         ui.button(on_click=lambda: right_drawer.toggle(), icon='menu').props('flat color=white')
-        
+
+    with ui.footer().classes('items-center justify-between text-center bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
+        footer()
+
+
     with ui.left_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('px-2 items-center') as left_drawer:
         imagesDrawer()   
          
-    with ui.right_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('') as right_drawer:
-        labelsDrawer()    
+    with ui.right_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('') as right_drawer: 
+            with ui.tabs().classes('w-full').props('dense color=amber indicator-color=amber active-color=amber') as tabs:
+                one = ui.tab('Detection').classes('whitespace-normal').props('color=amber no-caps')
+                two = ui.tab('Recognition').classes('whitespace-normal').props('color=amber no-caps')
+            with ui.tab_panels(tabs, value=one).classes('w-full h-full bg-stone-800').props('dark'):
+                with ui.tab_panel(one):
+                    objectDetectionDrawer()
+                with ui.tab_panel(two):
+                    imageRecognitionDrawer()
+                   
+                        
              
-    with ui.row().classes('w-full h-full justify-center items-center').classes('p-4'):
+    # with ui.row().classes('w-full h-full justify-center items-center').classes('p-4'):
+    #     with ui.element('div').classes(
+    #         'w-full h-full flex justify-center items-center overflow-auto p-4'
+    #     ):
+    #         ui.html("""
+    #             <canvas
+    #                 id="myCanvas"
+    #                 style="display: block; border: 1px solid black"
+    #             ></canvas>
+    #         """, sanitize=False)
+          
+
+    #         cerateCanvas()
+    with ui.element('div').classes(
+        'absolute inset-0 flex justify-center items-center overflow-auto p-4'
+    ).style('top: 20px; bottom: 0;').props('id=canvasContainer'):
         ui.html("""
-                <canvas
-                    id="myCanvas"
-                    style=" display: block; border: 1px solid black"
-                ></canvas>
-            """, sanitize=False)           
+            <canvas
+                id="myCanvas"
+                style="display: block; border: 1px solid black"
+            ></canvas>
+        """, sanitize=False)
 
         cerateCanvas()
         
