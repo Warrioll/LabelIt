@@ -27,12 +27,13 @@ def homePage():
             elif file.content_type=='text/csv':
                 pass
                 #csvClasses.append(file)
-            elif file.content_type=='application/json':
-                pass
+            # elif file.content_type=='application/json':
+            #     pass
                 #jsonClasses.append(file)
             elif file.content_type=='text/plain':
                 fileData= await utils.readTXTFile(file)
                 labelsData.append(fileData)
+        print('lbels',len(labelsData))
 
         usefullFiles=len(state.files)+len(jsonClasses)+len(csvClasses)+len(labelsData)
         uslessFiles=len(e.files)-usefullFiles
@@ -42,6 +43,8 @@ def homePage():
            ui.notify(f'{uslessFiles} files rejected becasue of bad extension',  classes='bg-red-700')
 
         notFoundImg =state.classesList.appendLabels(labelsData)
+        if notFoundImg>0:
+             ui.notify(f' Images not found for {notFoundImg} label files.',  classes='bg-white text-black')
         
         if len(state.files)>0:
            goLabelButton.enable()

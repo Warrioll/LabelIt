@@ -48,9 +48,10 @@ def recognitionClasses():
                                 on_change=nameChangeHandler
                             ).classes('col min-w-0 mx-3 self-center p-0').props('dark filled dense color=amber')
 
-                            ui.button(icon='delete_outline', on_click=lambda innerId=recognitionClass.innerId: deleteClass(innerId)) \
+                            with ui.button(icon='delete_outline', on_click=lambda innerId=recognitionClass.innerId: deleteClass(innerId)) \
                                                             .props('dense dark flat color=amber') \
-                                                            .classes('shrink-0 q-ma-none q-pa-none mx-3 mt-2')
+                                                            .classes('shrink-0 q-ma-none q-pa-none mx-3 mt-2'):
+                                  ui.tooltip('Delete class').classes('text-xs bg-stone-800 text-center')
 
     def addNewClass():
             state.imagesClassesList.addNewClass()
@@ -70,10 +71,10 @@ def recognitionClasses():
                                    if cls.innerId==innerIdToDel:
                                         img.imageClasses.remove(imageClass)
                          del imageClass
-                         ui.notify('Class deleted. Please reassign the affected labels to another class.')
+                         ui.notify('Class deleted. Please reassign the affected labels to another class.', classes='bg-white text-black')
                          if len(state.imagesClassesList.classes)==0:
                               state.imagesClassesList.addNewClass()
-                              ui.notify('All object detection classes have been deleted. A default class has been added to ensure that at least one class exists.')
+                              ui.notify('All object detection classes have been deleted. A default class has been added to ensure that at least one class exists.', classes='bg-white text-black')
                          displayClassesList.refresh()
                          #TODO
                          state.refreshClassesList()

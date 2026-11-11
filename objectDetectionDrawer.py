@@ -46,7 +46,7 @@ def objectDetectionDrawer():
     def boxesListFun():
              with ui.list().props('dense separator').classes('w-full '):
                 for i in range(len(state.currentImg.boxes)):
-                    with ui.item().classes(' px-4 items-center').classes('w-full ') as itm: 
+                    with ui.item().classes(' px-4 items-center').classes('w-full ').style("""  border-left: 3px solid """+state.currentImg.boxes[i].labelClass.color['value']+"""; """) as itm: 
                         
                         with ui.item_section().classes('w-6 ').props('side'):
                             no = ui.label(str(i+1)+'.')

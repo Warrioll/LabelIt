@@ -139,29 +139,6 @@ def workspacePage():
             //window.boxCounter++
 
             if (!(Math.floor(width)===0 && Math.floor(height)===0)){  
-                /*const box=  new fabric.Rect({
-                           id: """+str(state.boxCounter)+""",
-                           left:  left,
-                            top: top,
-                            width: width,
-                            height: height,
-                           fill: 'rgba(250, 250, 250, 0.3)',//'rgba(230, 198, 91, 0.3)',
-                           stroke: 'white',//'rgba(219, 166, 84, 1)',
-                           strokeWidth: 2, 
-                           transparentCorners: false,
-                           cornerColor: 'white',
-                           cornerStrokeColor: 'blue',
-                           cornerSize: 10,
-                           lockRotation: true,
-                           hasControls: true,
-                           hasBorders: true
-                       }); 
-                      box.setControlsVisibility({
-                           mtr: false
-                       }); 
-                       window.myCanvas.add(box);
-                       window.myCanvas.renderAll();
-                       */
 
                 
                 emitEvent('boxCreated', {
@@ -249,34 +226,36 @@ def workspacePage():
  
     def createBox(e):
         #nonlocal boxCounter
-        state.currentImg.appendBox(Box(state.boxCounter, (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], state.classesList.getExampleClass()))
-        print('new Box:',(e.args["left"], e.args["top"]), e.args["width"],e.args["height"])
+        exampleClass=state.classesList.getExampleClass()
+        state.currentImg.appendBox(Box(state.boxCounter, (e.args["left"], e.args["top"]), e.args["width"],e.args["height"], exampleClass))
+        #print('new Box:',(e.args["left"], e.args["top"]), e.args["width"],e.args["height"])
+        utils.drawBox(state.boxCounter,e.args["left"],e.args["top"],e.args["width"],e.args["height"], exampleClass.color['value'])
+        
+        # ui.run_javascript("""
+        #     const box=  new fabric.Rect({
+        #                    id: """+str(state.boxCounter)+""",
+        #                    left:  """+str(e.args["left"])+"""*window.canvasScale,
+        #                     top: """+str(e.args["top"])+"""*window.canvasScale,
+        #                     width: """+str(e.args["width"])+"""*window.canvasScale,
+        #                     height: """+str(e.args["height"])+"""*window.canvasScale,
+        #                    fill: 'rgba(250, 250, 250, 0.3)',//'rgba(230, 198, 91, 0.3)',
+        #                    stroke: 'white',//'rgba(219, 166, 84, 1)',
+        #                    strokeWidth: 2, 
+        #                    transparentCorners: false,
+        #                    cornerColor: 'white',
+        #                    cornerStrokeColor: 'blue',
+        #                    cornerSize: 10,
+        #                    lockRotation: true,
+        #                    hasControls: true,
+        #                    hasBorders: true
+        #                }); 
+        #               box.setControlsVisibility({
+        #                    mtr: false
+        #                }); 
+        #                window.myCanvas.add(box);
+        #                window.myCanvas.renderAll();
 
-        ui.run_javascript("""
-            const box=  new fabric.Rect({
-                           id: """+str(state.boxCounter)+""",
-                           left:  """+str(e.args["left"])+"""*window.canvasScale,
-                            top: """+str(e.args["top"])+"""*window.canvasScale,
-                            width: """+str(e.args["width"])+"""*window.canvasScale,
-                            height: """+str(e.args["height"])+"""*window.canvasScale,
-                           fill: 'rgba(250, 250, 250, 0.3)',//'rgba(230, 198, 91, 0.3)',
-                           stroke: 'white',//'rgba(219, 166, 84, 1)',
-                           strokeWidth: 2, 
-                           transparentCorners: false,
-                           cornerColor: 'white',
-                           cornerStrokeColor: 'blue',
-                           cornerSize: 10,
-                           lockRotation: true,
-                           hasControls: true,
-                           hasBorders: true
-                       }); 
-                      box.setControlsVisibility({
-                           mtr: false
-                       }); 
-                       window.myCanvas.add(box);
-                       window.myCanvas.renderAll();
-
-        """)
+        # """)
 
         state.boxCounter+=1#int(e.args["boxId"])+1
         #boxCounter+=1
@@ -299,7 +278,7 @@ def workspacePage():
 
         const container = document.getElementById('canvasContainer');
 
-        window.maxCanvasHeight= container.clientHeight- 32;
+        window.maxCanvasHeight= container.clientHeight- 36;
         window.maxCanvasWidth= container.clientWidth- 32;   
         window.canvasScale=Math.min(window.maxCanvasHeight/"""+str(imgH)+""", window.maxCanvasWidth/"""+str(imgW)+""")
         //window.boxCounter=0
@@ -310,7 +289,7 @@ def workspacePage():
     ui.on('boxDeselected', boxDeselectedHandler)
 
     with ui.header().classes('items-center justify-between bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
-        ui.button(on_click=lambda: left_drawer.toggle(), icon='s_grid_view').props('flat color=white')
+        ui.button(on_click=lambda: left_drawer.toggle(), icon='s_grid_view').props('flat color=amber')
         with ui.element('div').classes('flex justify-center flex-grow items-center '):
             
         #ui.label('LabelIt!')
@@ -319,14 +298,15 @@ def workspacePage():
                                 Label<span class="text-yellow-500  mb-0">It</span>!
                 </strong>
             """)
+            editClassesModal()
             with ui.button('Export').props('flat color=amber no-caps'):
                 with ui.menu().props('dark').classes('shadow-none bg-stone-800 border-1 border-stone-700') as menu:
                     ui.menu_item('Export object detection files (YOLO format)', on_click=lambda: ui.download(utils.createObjectDecectionZip(state.files), f'LabelIt_Object_Detection_YOLO_{utils.getCurrentDateStringForFileName()}.zip'))
                     ui.separator()
-                    ui.menu_item('Export image recognition JSON file',  on_click=lambda: ui.download(utils.createImageRecognitionJSONFile(state.files), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.json'))
-                    ui.menu_item('Export image recognition CSV file',on_click=lambda: ui.download(utils.createImageRecognitionCSVFile(state.files), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.csv'))
-            editClassesModal()
-        ui.button(on_click=lambda: right_drawer.toggle(), icon='menu').props('flat color=white')
+                    #ui.menu_item('Export image recognition JSON file',  on_click=lambda: ui.download(utils.createImageRecognitionJSONFile(state.files), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.json'))
+                    ui.menu_item('Export image recognition CSV file',on_click=lambda: ui.download(utils.createImageRecognitionCSVFile(state.files, state.imagesClassesList.classes), f'LabelIt_Image_Recognition_{utils.getCurrentDateStringForFileName()}.csv'))
+            
+        ui.button(on_click=lambda: right_drawer.toggle(), icon='menu').props('flat color=amber')
 
     with ui.footer().classes('items-center justify-between text-center bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
         footer()

@@ -2,7 +2,8 @@ from typeguard import typechecked
 import state
 from LabelClass import LabelClass
 from Box import Box
-
+import utils
+ 
 
 @typechecked
 class LabelClassesList:
@@ -10,8 +11,8 @@ class LabelClassesList:
     nonClass:LabelClass
 
     def __init__(self):
-        self.classes=[LabelClass(0,'my_class')]
-        self.nonClass=LabelClass(None, None)
+        self.classes=[LabelClass(0,'my_class', state.labelColors[0])]
+        self.nonClass=LabelClass(None, None, state.labelColors[0])
 
     def getExampleClass(self) -> LabelClass:
         return self.classes[0]
@@ -45,10 +46,10 @@ class LabelClassesList:
         className='new_class_'
         while(not self.checkIfClassNameAvailable(className+str(tmpClass), None)):
                     tmpClass+=1
-        self.classes.append(LabelClass(tmpId,className+str(tmpClass)))
+        self.classes.append(LabelClass(tmpId,className+str(tmpClass), state.labelColors[0]))
 
     def uploadClass(self, classId:int, ) -> LabelClass:
-        if self.checkIfClassIdAvailable(classId):
+        if self.checkIfClassIdAvailable(classId, None):
             tmpClass=1
             className='class_'
             while(not self.checkIfClassNameAvailable(className+str(tmpClass), None)):
@@ -62,10 +63,16 @@ class LabelClassesList:
 
     def appendLabels(self, data:list[dict]) -> int:
          notFountCounter=0
+
          for imgData in data:
               print(imgData['name'])
-              # FIXME nazyw sie pewnie nie zgadaja bo rozszerzenia .txt i jpg  i dlatego pewnie odrzuca
-              img = next((im for im in state.files if im.name == imgData['name']), None)
+              imgName=utils.getFileNameWithoutExtension(imgData['name'])
+              img=None
+              for im in state.files:
+                    if imgName==utils.getFileNameWithoutExtension(im.name):
+                          img=im
+                          break
+              #img = next((im for im in state.files if im.name == imgData['name']), None)
               if img is None:
                    notFountCounter+=1
                    continue
@@ -74,6 +81,7 @@ class LabelClassesList:
                    labelClass = next((cls for cls in self.classes if cls.classId == classId), None)
                    if labelClass is None:     
                         labelClass=self.uploadClass(classId)
-                   img.appendBox(Box(state.boxCounter, (b[1], b[2]), b[3], b[4], labelClass))
+                   w, h = img.getImageSize()
+                   img.appendBox(Box(state.boxCounter, (b[1]*w- b[3]*w/2, b[2]*h-b[4]*h/2), b[3]*w, b[4]*h, labelClass))
                    state.boxCounter+=1
          return notFountCounter

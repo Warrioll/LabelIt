@@ -13,6 +13,8 @@ class DatasetImage:
     mime:str
     boxes: list[Box]
     imageClasses: list[ImageClass]
+    status:SyntaxWarning
+    refreshBadge=None
 
     def __init__(self, img:bytes| Path, name:str, mime:str | None=None):
         if isinstance(img, bytes):
@@ -26,6 +28,8 @@ class DatasetImage:
             self.mime=mime
         self.boxes=[]
         self.imageClasses=[]
+        self.status='Todo'
+        self.refreshBadge=None
 
     def getUrl(self) -> str:
         return f'data:{self.mime};base64,{base64.b64encode(self.imgBytes).decode()}'
@@ -65,6 +69,26 @@ class DatasetImage:
              "image": self.name,
              "annotations": annotations
                 }
-    def getImageRecognitionDataForCSV(self)->list[str, str]:
-         classes=[cls.className for cls in self.imageClasses]
-         return [self.name, '"['+','.join(classes)+']"']
+    # def getImageRecognitionDataForCSV(self)->list[str, str]:
+    #      classes=[cls.className for cls in self.imageClasses]
+    #      return [self.name, '"['+','.join(classes)+']"']
+
+    def getImageRecognitionDataForCSV(self, classesList: list[ImageClass])->list:
+         row=[self.name]
+         for cls in classesList:
+            isAssigned=False
+            for imgCls in self.imageClasses:
+                   if imgCls.innerId==cls.innerId:
+                        isAssigned=True
+                        break
+            if isAssigned:
+                 row.append(1)
+            else:
+                 row.append(0)
+            
+         return row
+    
+    def updateStatus(self,newStatus:str):
+         if newStatus=='Todo' or newStatus=='Done' or newStatus=='Review':
+              self.status=newStatus
+              self.refreshBadge()
