@@ -1,7 +1,7 @@
 from nicegui import ui, events
-from Box import Box
+from classes.Box import Box
 from typeguard import typechecked
-from DatasetImage import DatasetImage
+from classes.DatasetImage import DatasetImage
 import state
 
 # NIE UZYWANE NIGDIZE

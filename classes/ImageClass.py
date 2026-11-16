@@ -1,5 +1,5 @@
 from typeguard import typechecked
-from uuid import uuid4
+import uuid
 
 @typechecked
 class ImageClass:
@@ -8,7 +8,7 @@ class ImageClass:
 
     def __init__(self, className:str|None):
         self.className=className
-        self.innerId=str(uuid4())
+        self.innerId= uuid.uuid4().hex
        
 
     def setClassName(self, className:str):

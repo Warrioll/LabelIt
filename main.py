@@ -1,6 +1,6 @@
 from nicegui import ui
-from homePage import homePage
-from workspacePage import workspacePage
+from pages.home.homePage import homePage
+from pages.workspace.workspacePage import workspacePage
 
 APP_URL='http://127.0.0.1:8080/'
 

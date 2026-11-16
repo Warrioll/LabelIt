@@ -1,12 +1,12 @@
 from nicegui import ui
-from DatasetImage import DatasetImage
+from classes.DatasetImage import DatasetImage
 import io
 import zipfile
 from datetime import datetime
 import json
 import csv
 from nicegui.elements.upload_files import SmallFileUpload
-from ImageClass import ImageClass
+from classes.ImageClass import ImageClass
 
 def basicAppSettings(pageSubtitle: str=''):
         ui.page_title('LabelIt! - '+pageSubtitle)
@@ -120,29 +120,4 @@ def getFileNameWithoutExtension(fileName:str):
       return '.'.join(name)
     
 
-def drawBox(boxId: int, left: float, top:float, width:float, height:float, color: str):
-      ui.run_javascript("""
-                        const color ='"""+color+"""'
-                        const fillColor = new fabric.Color( color).setAlpha(0.3).toRgba();
 
-                        const croppedImg=  new fabric.Rect({
-                                         id: """+str(boxId)+""",
-                                         left: """+str(left)+"""*window.canvasScale,
-                                         top: """+str(top)+"""*window.canvasScale,
-                                         width: """+str(width)+"""*window.canvasScale,
-                                         height: """+str(height)+"""*window.canvasScale, 
-                                         fill: fillColor,//'rgba(230, 198, 91, 0.3)',
-                                         stroke: color,//'rgba(219, 166, 84, 1)',
-                                         strokeWidth: 2, 
-                                         transparentCorners: false,
-                                         cornerColor: 'white',
-                                         cornerStrokeColor: 'blue',
-                                         cornerSize: 10,
-                                         lockRotation: true,
-                                         hasControls: true,
-                                         hasBorders: true
-                                     }); 
-                          window.myCanvas.add(croppedImg);
-                          window.myCanvas.renderAll();
-      
-                      """)

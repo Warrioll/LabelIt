@@ -1,6 +1,5 @@
 from typeguard import typechecked
-import state
-from ImageClass import ImageClass
+from classes.ImageClass import ImageClass
 
 @typechecked
 class ImageClassesList:
@@ -35,3 +34,7 @@ class ImageClassesList:
         while(not self.checkIfClassNameAvailable(className+str(tmpClass), None)):
                     tmpClass+=1
         self.classes.append(ImageClass(className+str(tmpClass)))
+
+    def clearImageClassesList(self):
+         self.classes.clear()
+         self.classes=[ImageClass('my_class')]

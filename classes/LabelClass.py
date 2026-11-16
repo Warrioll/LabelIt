@@ -1,5 +1,5 @@
 from typeguard import typechecked
-from uuid import uuid4
+import uuid 
 
 
 @typechecked
@@ -12,7 +12,7 @@ class LabelClass:
     def __init__(self, classId: int|None, className:str|None, color: dict[str, str]):
         self.classId=classId
         self.className=className
-        self.innerId=self.innerId = str(uuid4())
+        self.innerId=self.innerId = uuid.uuid4().hex
         self.color=color      
 
     def setClassName(self, className:str):

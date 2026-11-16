@@ -1,7 +1,7 @@
 import state
 from nicegui import ui
-from editClassesModal.detectionClasses import detectionClasses
-from editClassesModal.recognitionClasses import recognitionClasses
+from pages.workspace.editClassesModal.detectionClasses import detectionClasses
+from pages.workspace.editClassesModal.recognitionClasses import recognitionClasses
 
 
 def editClassesModal():
@@ -14,7 +14,7 @@ def editClassesModal():
             with ui.row().classes('w-full relative items-center justify-center p-3'):
                 ui.label('EDIT CLASSES').classes('text-md font-medium')
                 ui.button(icon='close', on_click=dialog.close) \
-                    .classes('absolute right-0').props('flat color=white')
+                    .classes('absolute right-0').props('flat color=amber')
             with ui.tabs().classes('w-full').props('dense color=amber indicator-color=amber active-color=amber') as tabs:
                 one = ui.tab('Object detection').classes('whitespace-normal w-full').props('color=amber no-caps')
                 two = ui.tab('Image recognition').classes('whitespace-normal w-full').props('color=amber no-caps')
@@ -26,4 +26,4 @@ def editClassesModal():
             
 
 
-    ui.button('Edit classes', on_click=dialog.open).props('flat color=amber no-caps')
+    ui.button('Classes', on_click=dialog.open).props('flat color=amber no-caps')

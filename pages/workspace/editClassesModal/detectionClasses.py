@@ -1,7 +1,9 @@
 import state
 from nicegui import ui
+import pages.workspace.canvas as canvas
 
 def detectionClasses():
+
     @ui.refreshable
     def displayClassesList():
         classesData = [[c.classId, c.className] for c in state.classesList.classes]
@@ -76,15 +78,17 @@ def detectionClasses():
                     ui.tooltip('Change class color').classes('text-xs bg-stone-800 text-center')
 
                     def updateColor(color, btn=colorButton, obj=labelClass):
-                        obj.color = color.copy()
+                        obj.color = color
                     
                         btn.style(
                             f'background-color: {color["value"]} !important;'
                         )
                     
                         state.refreshBoxesList()
+                        canvas.eraseAllBoxes()
+                        canvas.drawAllCurrrentImgBoxes()
                     
-                    with ui.menu().props('dark') as colorMenu:
+                    with ui.menu().props('dark').classes('shadow-none bg-stone-800 border-1 border-stone-700') as colorMenu:
                         with ui.grid(columns=5).classes('gap-2 p-2'):
                             for color in state.labelColors:
                             

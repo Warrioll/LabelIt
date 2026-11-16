@@ -3,8 +3,9 @@ import base64
 from PIL import Image
 from pathlib import Path
 from io import BytesIO
-from Box import Box
-from ImageClass import ImageClass
+from classes.Box import Box
+from classes.ImageClass import ImageClass
+from nicegui import ui 
 
 @typechecked
 class DatasetImage:
@@ -15,6 +16,8 @@ class DatasetImage:
     imageClasses: list[ImageClass]
     status:SyntaxWarning
     refreshBadge=None
+    button: ui.button
+    buttonLabel: ui.label
 
     def __init__(self, img:bytes| Path, name:str, mime:str | None=None):
         if isinstance(img, bytes):
@@ -30,6 +33,8 @@ class DatasetImage:
         self.imageClasses=[]
         self.status='Todo'
         self.refreshBadge=None
+        self.button=None
+        self.buttonLabel=None
 
     def getUrl(self) -> str:
         return f'data:{self.mime};base64,{base64.b64encode(self.imgBytes).decode()}'
@@ -47,6 +52,10 @@ class DatasetImage:
 
     def appendBox(self,box:Box):
          self.boxes.append(box)
+
+    def appendMultipleBoxes(self, boxesList: list[Box]):
+         for box in boxesList:
+              self.appendBox(box)
 
     def appendClass(self, imageClass: ImageClass):
          self.imageClasses.append(imageClass)
@@ -92,3 +101,7 @@ class DatasetImage:
          if newStatus=='Todo' or newStatus=='Done' or newStatus=='Review':
               self.status=newStatus
               self.refreshBadge()
+    def getBoxesListCopy(self) -> list[Box]:
+         return [box.getBoxCopy() for box in self.boxes]
+
+    

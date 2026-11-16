@@ -1,9 +1,7 @@
-from nicegui import ui, events
-from Box import Box
+from nicegui import ui
 from typeguard import typechecked
-from DatasetImage import DatasetImage
 import state
-from ImageClass import ImageClass
+from classes.ImageClass import ImageClass
 
 def imageRecognitionDrawer():
 

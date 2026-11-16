@@ -1,7 +1,7 @@
 from typeguard import typechecked
 import state
-from LabelClass import LabelClass
-from Box import Box
+from classes.LabelClass import LabelClass
+from classes.Box import Box
 import utils
  
 
@@ -54,7 +54,7 @@ class LabelClassesList:
             className='class_'
             while(not self.checkIfClassNameAvailable(className+str(tmpClass), None)):
                                  tmpClass+=1
-            labelClass=LabelClass(classId,className+str(tmpClass))
+            labelClass=LabelClass(classId,className+str(tmpClass),state.labelColors[0])
             self.classes.append(labelClass)
             return labelClass
         else:
@@ -82,6 +82,11 @@ class LabelClassesList:
                    if labelClass is None:     
                         labelClass=self.uploadClass(classId)
                    w, h = img.getImageSize()
-                   img.appendBox(Box(state.boxCounter, (b[1]*w- b[3]*w/2, b[2]*h-b[4]*h/2), b[3]*w, b[4]*h, labelClass))
-                   state.boxCounter+=1
+                   img.appendBox(Box( (b[1]*w- b[3]*w/2, b[2]*h-b[4]*h/2), b[3]*w, b[4]*h, labelClass))
+                   
          return notFountCounter
+
+
+    def clearLabelClassesList(self):
+         self.classes.clear()
+         self.classes=[LabelClass(0,'my_class', state.labelColors[0])]

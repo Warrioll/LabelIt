@@ -1,8 +1,8 @@
-from DatasetImage import DatasetImage
+from classes.DatasetImage import DatasetImage
 from pathlib import Path
-from LabelClassesList import LabelClassesList
-from ImageClass import ImageClass
-from ImageClassesList import ImageClassesList 
+from classes.LabelClassesList import LabelClassesList
+from classes.ImageClass import ImageClass
+from classes.ImageClassesList import ImageClassesList 
 
 labelColors=[
     {'name': 'white', "value": '#ffffff'},
@@ -41,16 +41,14 @@ files:list[DatasetImage]=[
             # DatasetImage(Path('/home/karol/datasets/PV-farm1/images/DJI_20240709121044_0123_T.JPG'),'DJI_20240709121044_0123_T.JPG'),
             # DatasetImage(Path('/home/karol/datasets/PV-farm1/images/DJI_20240709122552_0143_T.JPG'),'DJI_20240709122552_0143_T.JPG'),
 
-            DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113850_0001_T.JPG'),'DJI_20230921113850_0001_T.JPG'),
-            DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113854_0006_T.JPG'),'DJI_20230921113854_0006_T.JPG'),
-            DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113935_0063_T.JPG'),'DJI_20230921113935_0063_T.JPG'),
+            # DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113850_0001_T.JPG'),'DJI_20230921113850_0001_T.JPG'),
+            # DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113854_0006_T.JPG'),'DJI_20230921113854_0006_T.JPG'),
+            # DatasetImage(Path('C:\\Users\\lorak\\Desktop\\magisterka\\datasets\\Farma 2\\DJI_20230921113935_0063_T.JPG'),'DJI_20230921113935_0063_T.JPG'),
 ]
 refreshBoxesList=None
 refreshClassesList=None
 refreshFooter=None
 selectedLabelBoxId:int|None =None
-
-boxCounter=0
 
 classesList:LabelClassesList = LabelClassesList()
 imagesClassesList:ImageClassesList =ImageClassesList ()
@@ -58,6 +56,46 @@ classesCounter=0
 
 
 
-def setNewCurrentImage(img:DatasetImage):
-    currentImg=img
+
+    #selectedImgButton:ui.button|None=None
+def setImgAsCurrentImg(img: DatasetImage, canvasHandler: function):
+            global currentImg
+            btnMarkup='bg-amber-400 text-stone-900'
+            labelMarkup='text-stone-900'
+            
+            currentImg.button.classes(remove=btnMarkup)
+            currentImg.buttonLabel.classes(remove=labelMarkup)
+            
+            #nonlocal selectedImgButton
+            currentImg=img
+
+            currentImg.button.classes(add=btnMarkup)
+            currentImg.buttonLabel.classes(add=labelMarkup)
+
+            refreshFooter()
+
+            canvasHandler()
+
+            # canvas.eraseAllBoxes()
+            # canvas.setNewCanvasImgAndScale(imgW, imgH)
+
+            # canvas.drawAllCurrrentImgBoxes()
+
+
+
+
+
+            # if not (selectedImgButton is None):
+            #     selectedImgButton.classes(remove=markup)
+            #     elements = selectedImgButton.descendants()
+            #     label = next((el for el in elements  if isinstance(el, ui.label)), None)
+            #     label.classes(remove='text-stone-900')
+            #     label.classes(add='text-amber-400')
+            # selectedImgButton=e.sender
+            # selectedImgButton.classes(markup)
+            # elements = selectedImgButton.descendants()
+            # label = next((el for el in elements  if isinstance(el, ui.label)), None)
+            # label.classes(add='text-stone-900')
+            refreshBoxesList()
+            refreshClassesList()
 
