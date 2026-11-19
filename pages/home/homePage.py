@@ -79,20 +79,20 @@ def homePage():
     
     with ui.row().classes(' my-color w-full min-h-screen justify-center p-0 m-0 flex'):
 
-        with ui.column().classes('p-0 pl-32 bg-linear-to-r min-h-screen from-stone-800 to-stone-900 w-[40vw] m-0 justify-center  items-start'):
-                   ui.html(''' <div class="w-[80%] text-white text-[4rem]  h-full">
+        with ui.column().classes('p-0 pl-[6vw] bg-linear-to-r min-h-screen from-stone-800 to-stone-900 w-[40vw] m-0 justify-center  items-start'):
+                   ui.html(''' <div class="w-[80%] text-white text-[64px]  h-full">
                    Welcome to 
-                   <strong class="text-[9rem] mb-0">
+                   <strong class="text-[144px] mb-0">
                        <span class="text-yellow-500  mb-0">Label</Labelspan>It<span class="text-yellow-500  mb-0">!</span>
                    </strong>
-                    <br/><div class="text-2xl subtitle -mt-4">Upload your dataset and label or annotate <span class="text-yellow-500">it</sapn><span class="text-white">!</sapn></div>
+                    <br/><div class="text-[24px] subtitle -mt-4">Upload your dataset and label or annotate <span class="text-yellow-500">it</sapn><span class="text-white">!</sapn></div>
                    </div>''', sanitize=False)
         with ui.column().classes('bg-linear-to-r min-h-screen from-yellow-500  to-amber-500 m-0 w-[60vw] h-full justify-center align-center items-start px-32'):
           
-            ui.label('Upload files here:').classes('text-xl text-left text-black mb-8')
+            ui.label('Upload files here:').classes('text-[20px]  text-left text-black mb-8')
             upload = ui.upload(on_multi_upload=uploadHandler,  
                       on_rejected=lambda: ui.notify('Rejected!',classes='bg-red-700'),  multiple=True).classes('bg-red-500')\
-                      .classes('w-full bg-stone-900 h-[34rem] max-h-[100vh] rounded-lg').props('accept=".jpg,.jpeg,.png,.txt,.csv"')
+                      .classes('w-full bg-stone-900 h-[544px] max-h-[100vh] rounded-lg').props('accept=".jpg,.jpeg,.png,.txt,.csv"')
             ui.button('Upload files ', on_click=lambda: upload.run_method('upload')).classes('w-full rounded-lg mt-5 items-center text-white bg-stone-800').props('color=stone')
             ui.button('Remove all uploaded files ',on_click=clearHandler).classes('w-full rounded-lg mt-3 items-center').props(' outline color=black')
             goLabelButton = ui.button('Label/Annotate images ', on_click=lambda: ui.navigate.to('/workspace')).classes('w-full rounded-lg mt-3 mb-8 bg-white text-black')

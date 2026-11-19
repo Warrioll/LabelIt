@@ -70,7 +70,9 @@ def workspacePage():
                                  elif imgId>=len(state.files):
                                       ui.notify('There is no next image', classes='bg-white text-black')
                                  else:
-                                    state.currentImg.appendMultipleBoxes(state.files[imgId].getBoxesListCopy()) 
+                                    state.currentImg.appendMultipleBoxes(state.files[imgId].getBoxesListCopy())
+                                    state.refreshBoxesList()
+                                    canvas.refreshCanvas() 
 
                             def deleteBoxesHandler():
                                  canvas.eraseAllBoxes()
