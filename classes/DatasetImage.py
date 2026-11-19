@@ -1,6 +1,6 @@
 from typeguard import typechecked
 import base64
-from PIL import Image
+from PIL import Image, ImageOps
 from pathlib import Path
 from io import BytesIO
 from classes.Box import Box
@@ -41,6 +41,11 @@ class DatasetImage:
     
     def getPIL(self)-> Image:
         return Image.open(BytesIO(self.imgBytes))
+    
+    def getThumbnail(self, size: tuple[int, int] = (256, 160)) -> Image.Image:
+        with Image.open(BytesIO(self.imgBytes)) as img:
+            img.thumbnail(size)
+            return img.copy()
 
     def getMimeType(self) -> str:
         with Image.open(BytesIO(self.imgBytes)) as img:

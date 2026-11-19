@@ -26,5 +26,5 @@ class Box:
         centerY=self.position[1]+self.height/2
         return self.labelClass.classId, centerX, centerY, self.width, self.height
 
-    def getBoxCopy(self) ->Box:
+    def getBoxCopy(self) ->"Box":
         return Box((self.position[0],self.position[1]), self.width, self.height, self.labelClass)

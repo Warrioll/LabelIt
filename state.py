@@ -3,6 +3,8 @@ from pathlib import Path
 from classes.LabelClassesList import LabelClassesList
 from classes.ImageClass import ImageClass
 from classes.ImageClassesList import ImageClassesList 
+from typing import Callable
+from nicegui import ui
 
 labelColors=[
     {'name': 'white', "value": '#ffffff'},
@@ -58,7 +60,7 @@ classesCounter=0
 
 
     #selectedImgButton:ui.button|None=None
-def setImgAsCurrentImg(img: DatasetImage, canvasHandler: function):
+def setImgAsCurrentImg(img: DatasetImage, canvasHandler: Callable):
             global currentImg
             btnMarkup='bg-amber-400 text-stone-900'
             labelMarkup='text-stone-900'
@@ -99,3 +101,11 @@ def setImgAsCurrentImg(img: DatasetImage, canvasHandler: function):
             refreshBoxesList()
             refreshClassesList()
 
+def clearProject():
+    files.clear()
+    currentImg=None
+    selectedLabelBoxId =None
+    classesList.clearLabelClassesList()         
+    imagesClassesList.clearImageClassesList()
+    classesCounter=0
+    ui.run_javascript('window.location.reload()')

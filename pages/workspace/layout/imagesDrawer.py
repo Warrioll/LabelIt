@@ -43,7 +43,9 @@ def imagesDrawer():
                                              
          
                                  
-                                 ui.image(state.files[i].getPIL()).classes('w-32 h-20 m-1 object-contain  border-1 border-stone-900')
+                                 ui.image(state.files[i].getThumbnail()).classes(
+                                        'w-32 h-20 m-1 object-contain border-1 border-stone-900'
+                                    )
                                  label = ui.label(state.files[i].name).classes('w-full break-all no-caps text-left mx-2 mb-1 text-xs text-amber-400')
                                  state.files[i].buttonLabel=label
                                  state.files[i].button=btn

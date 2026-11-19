@@ -39,6 +39,19 @@ def workspacePage():
 
     canvas.setCanvasEventsHandlers()
 
+    with ui.left_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('px-2 items-center') as left_drawer:
+        imagesDrawer()   
+         
+    with ui.right_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('') as right_drawer: 
+            with ui.tabs().classes('w-full').props('dense color=amber indicator-color=amber active-color=amber') as tabs:
+                one = ui.tab('Detection').classes('whitespace-normal').props('color=amber no-caps')
+                two = ui.tab('Recognition').classes('whitespace-normal').props('color=amber no-caps')
+            with ui.tab_panels(tabs, value=one).classes('w-full h-full bg-stone-800').props('dark'):
+                with ui.tab_panel(one):
+                    objectDetectionDrawer()
+                with ui.tab_panel(two):
+                    imageRecognitionDrawer()
+
     with ui.header().classes('items-center justify-between bg-stone-900').style(""" background-color: var(--color-stone-900);"""):
         ui.button(on_click=lambda: left_drawer.toggle(), icon='s_grid_view').props('flat color=amber')
         with ui.element('div').classes('flex justify-center flex-grow items-center '):
@@ -101,18 +114,7 @@ def workspacePage():
         footer()
 
 
-    with ui.left_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('px-2 items-center') as left_drawer:
-        imagesDrawer()   
-         
-    with ui.right_drawer(top_corner=True, bottom_corner=True, fixed=False).classes('bg-stone-800').classes('') as right_drawer: 
-            with ui.tabs().classes('w-full').props('dense color=amber indicator-color=amber active-color=amber') as tabs:
-                one = ui.tab('Detection').classes('whitespace-normal').props('color=amber no-caps')
-                two = ui.tab('Recognition').classes('whitespace-normal').props('color=amber no-caps')
-            with ui.tab_panels(tabs, value=one).classes('w-full h-full bg-stone-800').props('dark'):
-                with ui.tab_panel(one):
-                    objectDetectionDrawer()
-                with ui.tab_panel(two):
-                    imageRecognitionDrawer()
+
                    
                         
              

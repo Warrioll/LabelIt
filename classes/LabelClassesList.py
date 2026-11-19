@@ -61,8 +61,8 @@ class LabelClassesList:
               return  None
          
 
-    def appendLabels(self, data:list[dict]) -> int:
-         notFountCounter=0
+    def appendLabels(self, data:list[dict]) -> list[str]:
+         foundImgs=[]
 
          for imgData in data:
               print(imgData['name'])
@@ -74,8 +74,8 @@ class LabelClassesList:
                           break
               #img = next((im for im in state.files if im.name == imgData['name']), None)
               if img is None:
-                   notFountCounter+=1
                    continue
+              foundImgs.append(imgData['name'])
               for b in imgData["boxes"]:
                    classId=b[0]
                    labelClass = next((cls for cls in self.classes if cls.classId == classId), None)
@@ -84,7 +84,7 @@ class LabelClassesList:
                    w, h = img.getImageSize()
                    img.appendBox(Box( (b[1]*w- b[3]*w/2, b[2]*h-b[4]*h/2), b[3]*w, b[4]*h, labelClass))
                    
-         return notFountCounter
+         return foundImgs
 
 
     def clearLabelClassesList(self):

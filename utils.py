@@ -120,4 +120,19 @@ def getFileNameWithoutExtension(fileName:str):
       return '.'.join(name)
     
 
+async def readCSVFile(file:SmallFileUpload) -> tuple[list[str], list[dict]]:
+                reader = csv.reader(io.StringIO((await file.read()).decode("utf-8")), delimiter=";")
+                rows = list(reader)
+                classes=list(rows)[0][2:].copy()
+                imgToClasses=[]
+                
+                for i, wiersz in enumerate(rows):
+                        if i==0:
+                               continue
+                        else:
+                                tmp={"name": wiersz[1]}
+                                for j in range(2,len(wiersz)):
+                                       tmp[classes[j-2]]=wiersz[j]=='1'
+                                imgToClasses.append(tmp)
+                return classes, imgToClasses
 
