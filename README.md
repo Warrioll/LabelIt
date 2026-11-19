@@ -1,8 +1,14 @@
 # LabelIt!
 
-LabelIt! to prosta aplikacja webowa do przygotowywania etykiet dla zbiorów obrazów. Obsługuje klasyfikację obrazów oraz tworzenie ramek do detekcji obiektów.
+LabelIt! is a simple web application for preparing labels for image datasets. It supports image classification and drawing bounding boxes for object detection.
 
-## Interfejs użytkownika
+## About
+
+This application was created as a university project.
+
+**Author:** `Karol Nowak`
+
+## User Interface
 
 ### Homepage
 
@@ -12,20 +18,18 @@ LabelIt! to prosta aplikacja webowa do przygotowywania etykiet dla zbiorów obra
 
 ![Workspace](screenshots/workspace.jpg)
 
-> Dodaj zrzuty ekranu do folderu `screenshots/` pod nazwami `homepage.png` i `workspace.png`.
+## Requirements
 
-## Wymagania
-
-- Python 3.10 lub nowszy
+- Python 3.10 or newer
 - pip
 - Git
 
-## Uruchomienie
+## Getting Started
 
-Sklonuj repozytorium i przejdź do katalogu projektu:
+Clone the repository and navigate to the project directory:
 
 ```bash
-git clone <URL_REPOZYTORIUM>
+git clone <REPOSITORY_URL>
 cd labelit
 ```
 
@@ -47,9 +51,11 @@ python -m pip install -r requirements.txt
 python main.py
 ```
 
-Otwórz [http://localhost:8080](http://localhost:8080) w przeglądarce. Serwer zatrzymasz skrótem `Ctrl+C` w terminalu.
+Open [http://localhost:8080](http://localhost:8080) in your browser. Stop the server by pressing `Ctrl+C` in the terminal.
 
-Przy kolejnych uruchomieniach na Linuxie:
+To start the app again later, navigate to the project directory, activate the virtual environment, and run the app:
+
+On Linux:
 
 ```bash
 cd labelit
@@ -57,7 +63,7 @@ source .venv/bin/activate
 python main.py
 ```
 
-Na Windows (PowerShell) użyj:
+On Windows (PowerShell):
 
 ```powershell
 cd labelit
@@ -65,15 +71,15 @@ cd labelit
 python main.py
 ```
 
-## Obsługiwane pliki
+## Supported File Types
 
-- Obrazy: `.jpg`, `.jpeg`, `.png`
-- Etykiety klasyfikacji: `.txt`
-- Adnotacje obiektów: `.csv`
+- Images: `.jpg`, `.jpeg`, `.png`
+- Classification labels: `.txt`
+- Object annotations: `.csv`
 
-## Technologie
+## Technologies
 
 - Python
 - [NiceGUI](https://nicegui.io/)
 - Pillow
-- [Fabric.js](https://fabricjs.com/) (canvas do wyświetlania i edycji adnotacji)
+- [Fabric.js](https://fabricjs.com/) (canvas for displaying and editing annotations)
