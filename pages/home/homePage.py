@@ -22,10 +22,17 @@ def homePage():
 
 
         uslessFiles=[]
+        imgDuplicates=[]
         for file in e.files:
             if file.content_type=='image/jpeg' or file.content_type=='image/png': 
- 
-                  state.files.append( DatasetImage(await file.read(), file.name,file.content_type))
+                duplicate = any(
+                image.name.casefold() == file.name.casefold()
+                for image in state.files
+                )
+                if duplicate:
+                    imgDuplicates.append(file)
+                else:
+                    state.files.append( DatasetImage(await file.read(), file.name,file.content_type))
             elif file.content_type=='text/csv':
                 csvFiles.append(file)
             elif file.content_type=='text/plain':
@@ -33,12 +40,13 @@ def homePage():
                 fileData= await utils.readTXTFile(file)
                 labelsData.append(fileData)
             else:
-                print('useless!')
                 uslessFiles.append(file)
+        # for file in imgDuplicates:
+        #     e.sender.remove_upload(file)
         usefullFiles=len(state.files)+len(csvFiles)+len(labelsData)#+len(jsonClasses)
         uslessFilesAmount=len(uslessFiles)
-        for uf in uslessFiles:
-            e.sender.remove_upload(uf)
+        # for uf in uslessFiles:
+        #     e.sender.remove_upload(uf)
         del e.files    
         if uslessFilesAmount>0:
            ui.notify(f'{uslessFilesAmount} files rejected becasue of bad extension',  classes='bg-red-700')
@@ -64,6 +72,11 @@ def homePage():
 
             ui.html('<style>.multi-line-notification { white-space: pre-line; }</style>', sanitize=False)
             ui.notification(notifyStr, multi_line=True,classes='bg-white text-black multi-line-notification', html=True, timeout=15.0)
+        if len(imgDuplicates)>0:
+            ui.notify(
+                f'{len(imgDuplicates)} files skipped because their names already exist',
+                classes='bg-white text-black',
+            )
 
 
 
@@ -83,7 +96,7 @@ def homePage():
                    ui.html(''' <div class="w-[80%] text-white text-[64px]  h-full">
                    Welcome to 
                    <strong class="text-[144px] mb-0">
-                       <span class="text-yellow-500  mb-0">Label</Labelspan>It<span class="text-yellow-500  mb-0">!</span>
+                       <span class="text-yellow-500  mb-0">Label</span>It<span class="text-yellow-500  mb-0">!</span>
                    </strong>
                     <br/><div class="text-[24px] subtitle -mt-4">Upload your dataset and label or annotate <span class="text-yellow-500">it</sapn><span class="text-white">!</sapn></div>
                    </div>''', sanitize=False)
@@ -96,6 +109,7 @@ def homePage():
             ui.button('Upload files ', on_click=lambda: upload.run_method('upload')).classes('w-full rounded-lg mt-5 items-center text-white bg-stone-800').props('color=stone')
             ui.button('Remove all uploaded files ',on_click=clearHandler).classes('w-full rounded-lg mt-3 items-center').props(' outline color=black')
             goLabelButton = ui.button('Label/Annotate images ', on_click=lambda: ui.navigate.to('/workspace')).classes('w-full rounded-lg mt-3 mb-8 bg-white text-black')
-            goLabelButton.disable()
+            if len(state.files)==0:
+                goLabelButton.disable()
 
        
