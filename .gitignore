@@ -3,7 +3,9 @@
 !*/
 !*.py
 !requirements.txt
+!README.md
 !.gitignore
+!screenshots/
 
 # Local environments and generated Python cache
 /venv/
